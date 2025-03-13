@@ -1,59 +1,26 @@
-import http from 'node:http';
+import express from 'express';
 import path from 'node:path';
-import { readFile } from 'node:fs/promises';
 
-const server = http.createServer(async (req, res) => {
-  const { url } = req;
+const app = express();
 
-  if (url === '/') {
-    try {
-      const data = await readFile(
-        path.join(import.meta.dirname, '/index.html')
-      );
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.end(data);
-    } catch (err) {
-      console.log(err.message);
-      res.writeHead(500, { 'content-type': 'text/plain' });
-      res.end('Server error');
-    }
-  } else if (url === '/about') {
-    try {
-      const data = await readFile(
-        path.join(import.meta.dirname, '/about.html')
-      );
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.end(data);
-    } catch (err) {
-      console.log(err.message);
-      res.writeHead(500, { 'content-type': 'text/plain' });
-      res.end('Server error');
-    }
-  } else if (url === '/contact-me') {
-    try {
-      const data = await readFile(
-        path.join(import.meta.dirname, '/contact-me.html')
-      );
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.end(data);
-    } catch (err) {
-      console.log(err.message);
-      res.writeHead(500, { 'content-type': 'text/plain' });
-      res.end('Server error');
-    }
-  } else {
-    try {
-      const data = await readFile(path.join(import.meta.dirname, '/404.html'));
-      res.writeHead(404, { 'content-type': 'text/html' });
-      res.end(data);
-    } catch (err) {
-      console.log(err.message);
-      res.writeHead(500, { 'content-type': 'text/plain' });
-      res.end('Server error');
-    }
-  }
+app.get('/', (req, res) => {
+  res.sendFile(path.join(import.meta.dirname, 'public', './index.html'));
 });
 
-server.listen(5000, () => {
-  console.log('server is running on port 5000');
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(import.meta.dirname, 'public', './about.html'));
+});
+
+app.get('/contact-me', (req, res) => {
+  res.sendFile(path.join(import.meta.dirname, 'public', './contact-me.html'));
+});
+
+app.get('*', (req, res) => {
+  res
+    .status(404)
+    .sendFile(path.join(import.meta.dirname, 'public', './404.html'));
+});
+
+app.listen(5000, () => {
+  console.log('server is listening on port 5000');
 });
